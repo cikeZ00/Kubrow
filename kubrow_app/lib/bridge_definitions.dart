@@ -16,6 +16,10 @@ abstract class Rust {
   Future<bool> rustReleaseMode({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kRustReleaseModeConstMeta;
+
+  Future<String> makeRequest({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kMakeRequestConstMeta;
 }
 
 enum Platform {

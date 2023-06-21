@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Kubrow',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -23,9 +23,11 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.lightBlue,
+
+
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Kubrow'),
     );
   }
 }
@@ -73,6 +75,37 @@ class _MyHomePageState extends State<MyHomePage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.add_alert),
+            tooltip: 'Show Snackbar',
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('This is a snackbar')));
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.navigate_next),
+            tooltip: 'Go to the next page',
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute<void>(
+                builder: (BuildContext context) {
+                  return Scaffold(
+                    appBar: AppBar(
+                      title: const Text('Next page'),
+                    ),
+                    body: const Center(
+                      child: Text(
+                        'This is the next page',
+                        style: TextStyle(fontSize: 24),
+                      ),
+                    ),
+                  );
+                },
+              ));
+            },
+          ),
+        ],
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
@@ -94,6 +127,38 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            const Text("API Data"),
+
+            FutureBuilder<List<dynamic>>(
+              future: Future.wait([platform, isRelease]),
+              builder: (context, snap) {
+                final style = Theme.of(context).textTheme.headline4;
+                if (snap.error != null) {
+                  debugPrint(snap.error.toString());
+                  return Tooltip(
+                    message: snap.error.toString(),
+                    child: Text('Unknown OS', style: style),
+                  );
+                }
+
+                final data = snap.data;
+                if (data == null) return const CircularProgressIndicator();
+
+                final Platform platform = data[0];
+                final release = data[1] ? 'Release' : 'Debug';
+                final text = const {
+                      Platform.Android: 'Android',
+                      Platform.Ios: 'iOS',
+                      Platform.MacApple: 'MacOS with Apple Silicon',
+                      Platform.MacIntel: 'MacOS',
+                      Platform.Windows: 'Windows',
+                    }[platform] ??
+                    'Unknown OS';
+
+                return Text('$text $release', style: style);
+              },
+            ),
+            
             const Text("You're running on"),
             // To render the results of a Future, a FutureBuilder is used which
             // turns a Future into an AsyncSnapshot, which can be used to

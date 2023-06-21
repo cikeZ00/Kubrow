@@ -57,10 +57,30 @@ class RustImpl implements Rust {
         argNames: [],
       );
 
+  Future<String> makeRequest({dynamic hint}) {
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_make_request(port_),
+      parseSuccessData: _wire2api_String,
+      constMeta: kMakeRequestConstMeta,
+      argValues: [],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kMakeRequestConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "make_request",
+        argNames: [],
+      );
+
   void dispose() {
     _platform.dispose();
   }
 // Section: wire2api
+
+  String _wire2api_String(dynamic raw) {
+    return raw as String;
+  }
 
   bool _wire2api_bool(dynamic raw) {
     return raw as bool;
@@ -72,6 +92,14 @@ class RustImpl implements Rust {
 
   Platform _wire2api_platform(dynamic raw) {
     return Platform.values[raw as int];
+  }
+
+  int _wire2api_u8(dynamic raw) {
+    return raw as int;
+  }
+
+  Uint8List _wire2api_uint_8_list(dynamic raw) {
+    return raw as Uint8List;
   }
 }
 
@@ -211,6 +239,20 @@ class RustWire implements FlutterRustBridgeWireBase {
           'wire_rust_release_mode');
   late final _wire_rust_release_mode =
       _wire_rust_release_modePtr.asFunction<void Function(int)>();
+
+  void wire_make_request(
+    int port_,
+  ) {
+    return _wire_make_request(
+      port_,
+    );
+  }
+
+  late final _wire_make_requestPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_make_request');
+  late final _wire_make_request =
+      _wire_make_requestPtr.asFunction<void Function(int)>();
 
   void free_WireSyncReturn(
     WireSyncReturn ptr,
