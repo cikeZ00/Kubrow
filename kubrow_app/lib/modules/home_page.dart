@@ -32,7 +32,7 @@ class _MyHomePageState extends State<MyHomePage> {
             tooltip: 'Show Snackbar',
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('This is a snackbar')));
+                  const SnackBar(content: Text('Do something')));
             },
           ),
           IconButton(
