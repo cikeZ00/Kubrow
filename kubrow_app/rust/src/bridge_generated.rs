@@ -41,14 +41,14 @@ fn wire_rust_release_mode_impl(port_: MessagePort) {
         move || move |task_callback| Ok(rust_release_mode()),
     )
 }
-fn wire_make_request_impl(port_: MessagePort) {
+fn wire_fetch_data_impl(port_: MessagePort) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
-            debug_name: "make_request",
+            debug_name: "fetch_data",
             port: Some(port_),
             mode: FfiCallMode::Normal,
         },
-        move || move |task_callback| Ok(make_request()),
+        move || move |task_callback| Ok(fetch_data()),
     )
 }
 // Section: wrapper structs

@@ -12,8 +12,8 @@ pub extern "C" fn wire_rust_release_mode(port_: i64) {
 }
 
 #[no_mangle]
-pub extern "C" fn wire_make_request(port_: i64) {
-    wire_make_request_impl(port_)
+pub extern "C" fn wire_fetch_data(port_: i64) {
+    wire_fetch_data_impl(port_)
 }
 
 // Section: allocate functions

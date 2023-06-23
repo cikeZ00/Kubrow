@@ -5,13 +5,10 @@ class Page2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Page 2'),
-      ),
-      body: const Center(
+    return const Scaffold(
+      body: Center(
         child: Text(
-          'This is Page 2',
+          'This is Page 2. Without any top bar.',
           style: TextStyle(fontSize: 24),
         ),
       ),

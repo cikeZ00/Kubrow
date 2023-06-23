@@ -57,19 +57,19 @@ class RustImpl implements Rust {
         argNames: [],
       );
 
-  Future<String> makeRequest({dynamic hint}) {
+  Future<String?> fetchData({dynamic hint}) {
     return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_make_request(port_),
-      parseSuccessData: _wire2api_String,
-      constMeta: kMakeRequestConstMeta,
+      callFfi: (port_) => _platform.inner.wire_fetch_data(port_),
+      parseSuccessData: _wire2api_opt_String,
+      constMeta: kFetchDataConstMeta,
       argValues: [],
       hint: hint,
     ));
   }
 
-  FlutterRustBridgeTaskConstMeta get kMakeRequestConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kFetchDataConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "make_request",
+        debugName: "fetch_data",
         argNames: [],
       );
 
@@ -88,6 +88,10 @@ class RustImpl implements Rust {
 
   int _wire2api_i32(dynamic raw) {
     return raw as int;
+  }
+
+  String? _wire2api_opt_String(dynamic raw) {
+    return raw == null ? null : _wire2api_String(raw);
   }
 
   Platform _wire2api_platform(dynamic raw) {
@@ -240,19 +244,19 @@ class RustWire implements FlutterRustBridgeWireBase {
   late final _wire_rust_release_mode =
       _wire_rust_release_modePtr.asFunction<void Function(int)>();
 
-  void wire_make_request(
+  void wire_fetch_data(
     int port_,
   ) {
-    return _wire_make_request(
+    return _wire_fetch_data(
       port_,
     );
   }
 
-  late final _wire_make_requestPtr =
+  late final _wire_fetch_dataPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'wire_make_request');
-  late final _wire_make_request =
-      _wire_make_requestPtr.asFunction<void Function(int)>();
+          'wire_fetch_data');
+  late final _wire_fetch_data =
+      _wire_fetch_dataPtr.asFunction<void Function(int)>();
 
   void free_WireSyncReturn(
     WireSyncReturn ptr,

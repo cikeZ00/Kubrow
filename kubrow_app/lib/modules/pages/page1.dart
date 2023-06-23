@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../ffi.dart';
 
 class Page1 extends StatelessWidget {
   const Page1({Key? key}) : super(key: key);
@@ -9,10 +10,20 @@ class Page1 extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Page 1'),
       ),
-      body: const Center(
-        child: Text(
-          'This is Page 1',
-          style: TextStyle(fontSize: 24),
+      body: Center(
+        child: ElevatedButton(
+          child: const Text('Make Request'),
+          onPressed: () {
+            api.fetchData().then((_) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Request completed successfully')),
+              );
+            }).catchError((error) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Request failed: $error')),
+              );
+            });
+          },
         ),
       ),
     );

@@ -1,4 +1,4 @@
-use reqwest::Error;
+use reqwest::{Error, Response};
 
 pub enum Platform {
     Unknown,
@@ -35,8 +35,9 @@ pub fn rust_release_mode() -> bool {
     cfg!(not(debug_assertions))
 }
 
-pub async fn make_request() -> Result<(), Error> {
-    let res = reqwest::get("https://www.rust-lang.org").await?;
-    println!("Status: {}", res.status());
-    Ok(())
+pub async fn fetch_data() -> Option<String> {
+    let url = "https://google.com";
+    let response = reqwest::get(url).await.ok()?;
+    let body = response.text().await.ok()?;
+    Some(body)
 }

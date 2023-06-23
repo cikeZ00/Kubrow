@@ -11,7 +11,7 @@ class Page3 extends StatelessWidget {
       ),
       body: const Center(
         child: Text(
-          'This is Page 3',
+          'Settings page, maybe?',
           style: TextStyle(fontSize: 24),
         ),
       ),
