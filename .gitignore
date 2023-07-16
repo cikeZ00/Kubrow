@@ -13,12 +13,12 @@
 *.iml
 *.ipr
 *.iws
-.idea/
+**/.idea/
 
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
-#.vscode/
+**/.vscode/
 
 # Web related
 
@@ -36,17 +36,15 @@ native/target
 xcuserdata
 jniLibs
 
-Cargo.lock
-pubspec.lock
+**/Cargo.lock
+**/pubspec.lock
 
 # Ignore Rust target compilation files
 **/target/
 
 # Ignore pnpm specific files
-pnpm-lock.yaml
-shrinkwrap.yaml
-.pnpm/
-.pnpm-debug.log
+**/pnpm-lock.yaml
+**/.pnpm-debug.log
 
 # Ignore Node.js dependencies (optional)
 # Uncomment the following line if you want to ignore the "node_modules" folder.
