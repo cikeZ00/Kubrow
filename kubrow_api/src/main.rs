@@ -1,28 +1,29 @@
-mod handler;
-mod model;
-mod response;
-mod route;
-
-use axum::http::{
-    header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
-    HeaderValue, Method,
-};
-use route::create_router;
-use tower_http::cors::CorsLayer;
+use axum::{routing::get, Router};
+use std::net::SocketAddr;
 
 #[tokio::main]
-async fn main () {
-    let cors = CorsLayer::new()
-        .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
-        .allow_methods([Method::GET, Method::POST, Method::PATCH, Method::DELETE])
-        .allow_credentials(true)
-        .allow_headers([AUTHORIZATION, ACCEPT, CONTENT_TYPE]);
+async fn main() {
+    // Route all requests on "/" endpoint to anonymous handler.
+    //
+    // A handler is an async function which returns something that implements
+    // `axum::response::IntoResponse`.
 
-    let app = create_router().layer(cors);
+    // A closure or a function can be used as handler.
 
-    println!("🚀 Server started successfully");
-    axum::Server::bind(&"0.0.0.0:8000".parse().unwrap())
+    let app = Router::new().route("/", get(handler));
+    //        Router::new().route("/", get(|| async { "Hello, world!" }));
+
+    // Address that server will bind to.
+    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+
+    // Use `hyper::server::Server` which is re-exported through `axum::Server` to serve the app.
+    axum::Server::bind(&addr)
+        // Hyper server takes a make service.
         .serve(app.into_make_service())
         .await
         .unwrap();
+}
+
+async fn handler() -> &'static str {
+    "Hello, world!"
 }
