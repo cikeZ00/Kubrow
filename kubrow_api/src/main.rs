@@ -23,7 +23,8 @@ async fn main() {
         .allow_headers([AUTHORIZATION, ACCEPT, CONTENT_TYPE]);
 
     // Create the router by calling the `routes` function from the api module.
-    let app = api::routes::routes().layer(cors);
+    let app = api::routes::routes()
+        .layer(cors);
 
     // Use `hyper::server::Server` which is re-exported through `axum::Server` to serve the app.
     Server::bind(&addr)
