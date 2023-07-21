@@ -1,7 +1,6 @@
 // handlers.rs
 use reqwest::Error;
 use std::collections::HashMap;
-use std::hash::Hash;
 use axum::Json;
 use axum_macros::debug_handler;
 use serde_json::Value;
