@@ -26,6 +26,7 @@ async fn main() {
     let app = api::routes::routes()
         .layer(cors);
 
+    println!("Starting server on http://127.0.0.1:3000");
     // Use `hyper::server::Server` which is re-exported through `axum::Server` to serve the app.
     Server::bind(&addr)
         // Hyper server takes a make service.
