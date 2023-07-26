@@ -6,5 +6,5 @@ use crate::api::handlers::*;
 pub fn routes() -> Router {
     Router::new()
         .route("/", get(handler))
-        .route("/ws", get(world_state))
+        .route("/warframe/ws", get(world_state))
 }
