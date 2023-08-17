@@ -1,11 +1,9 @@
 use std::collections::BTreeMap;
-use std::fs::File;
 use axum::Json;
 use reqwest::{Client, Error, Url};
 use serde_json::Value;
 use regex::Regex;
-use std::io::prelude::*;
-use std::io::{self, Write};
+use std::io::Write;
 
 
 async fn fetch_data_json(url: &str) -> Result<Json<BTreeMap<String, Value>>, Error> {
@@ -17,7 +15,7 @@ async fn fetch_data_json(url: &str) -> Result<Json<BTreeMap<String, Value>>, Err
 }
 
 async fn fetch_data(url: &str) -> Result<Vec<u8>, Error> {
-    let client = reqwest::Client::builder()
+    let client = Client::builder()
         .danger_accept_invalid_certs(true)
         .build()?;
 
@@ -41,7 +39,6 @@ async fn fetch_file(url: &str) -> Result<(), Box<dyn std::error::Error>> {
     if !response.status().is_success() {
         return Err(format!("Request failed with status: {}", response.status()).into());
     }
-    //let mut tmpfile = tempfile::tempfile().unwrap();
 
     // Open the output file for writing
     let mut output_file = std::fs::File::create("wf.lzma")?;
@@ -73,7 +70,6 @@ pub async fn parse_manifest() {
     fetch_file(&*origin).await.expect("TODO: panic message");
     let filename = "wf.lzma";
     let mut f = std::io::BufReader::new(std::fs::File::open(filename).unwrap());
-    // "decomp" can be anything that implements "std::io::Write"
     let mut decomp: Vec<u8> = Vec::new();
     lzma_rs::lzma_decompress(&mut f, &mut decomp).unwrap();
 
@@ -86,5 +82,5 @@ pub async fn parse_manifest() {
 
     let manifest_url = format!("https://content.warframe.com/PublicExport/Manifest/{}", manifest_endpoint);
     let manifest_data = fetch_data_json(&manifest_url).await.unwrap();
-    //println!("Manifest Data: {:?}", manifest_data);
+    println!("Manifest Data: {:?}", manifest_data);
 }
