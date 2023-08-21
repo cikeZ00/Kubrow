@@ -52,3 +52,4 @@ jniLibs
 
 # Warframe
 **/wf.lzma
+/kubrow_api/data/

@@ -1,7 +1,8 @@
 use std::collections::BTreeMap;
+use std::fs::{DirBuilder, File, read_dir};
 use axum::Json;
 use reqwest::{Client, Error, Url};
-use serde_json::Value;
+use serde_json::{to_vec, Value};
 use regex::Regex;
 use std::io::Write;
 
@@ -10,7 +11,11 @@ async fn fetch_data_json(url: &str) -> Result<Json<BTreeMap<String, Value>>, Err
     println!("{}", url);
     let response = reqwest::get(url).await?;
     let data = response.text().await?;
-    let manifest: BTreeMap<String, Value> = serde_json::from_str(&data).unwrap();
+
+    // Replace or remove problematic control characters
+    let cleaned_data = data.chars().filter(|&c| c.is_ascii() && !c.is_ascii_control()).collect::<String>();
+
+    let manifest: BTreeMap<String, Value> = serde_json::from_str(&cleaned_data).unwrap();
     Ok(Json(manifest))
 }
 
@@ -26,27 +31,21 @@ async fn fetch_data(url: &str) -> Result<Vec<u8>, Error> {
 }
 
 async fn fetch_file(url: &str) -> Result<(), Box<dyn std::error::Error>> {
-    // Create a reqwest client
     let client = Client::new();
-
-    // Parse the URL
     let url = Url::parse(url)?;
-
-    // Send the GET request and await the response
     let response = client.get(url).send().await?;
 
-    // Check if the request was successful (status code 2xx)
     if !response.status().is_success() {
         return Err(format!("Request failed with status: {}", response.status()).into());
     }
 
-    // Open the output file for writing
-    let mut output_file = std::fs::File::create("wf.lzma")?;
-
-    // Download the file and write it to the output file
+    if !read_dir("data").is_ok() {
+        DirBuilder::new().recursive(true).create("data").expect("TODO: panic message");
+        DirBuilder::new().recursive(true).create("data/manifest").expect("TODO: panic message");
+    }
+    let mut output_file = std::fs::File::create("data/wf.lzma")?;
     let content = response.bytes().await?;
     output_file.write_all(&content)?;
-
     Ok(())
 }
 
@@ -57,6 +56,7 @@ async fn origin_server_available() -> bool {
     }
 }
 
+// TODO: Optimize, dont unwrap everything
 pub async fn parse_manifest() {
     let origin_server_available = origin_server_available().await;
     let locale = "en";
@@ -67,20 +67,28 @@ pub async fn parse_manifest() {
         locale
     );
 
-    fetch_file(&*origin).await.expect("TODO: panic message");
-    let filename = "wf.lzma";
-    let mut f = std::io::BufReader::new(std::fs::File::open(filename).unwrap());
+    // Fetch compressed manifest from warframe servers
+    fetch_file(&*origin).await.expect("");
+
+    // Decompress the manifest we fetched
+    let filename = "data/wf.lzma";
+    let mut f = std::io::BufReader::new(File::open(filename).unwrap());
     let mut decomp: Vec<u8> = Vec::new();
     lzma_rs::lzma_decompress(&mut f, &mut decomp).unwrap();
-
     let decompressed_str = String::from_utf8(decomp).unwrap();
-    println!("{}", decompressed_str);
 
-    let manifest_regex = r"ExportManifest.*";
-    let re = Regex::new(manifest_regex).unwrap();
-    let manifest_endpoint = re.find(&decompressed_str).unwrap().as_str();
+    //let manifest_regex = r"ExportManifest.*";
+    //let parse_regex = r"Export.*";
+    let re = Regex::new(r"Export.*").unwrap();
+    for export in re.find_iter(&decompressed_str) {
+        let url = format!("https://content.warframe.com/PublicExport/Manifest/{}", export.as_str());
+        let data = fetch_data_json(&url).await.unwrap();
 
-    let manifest_url = format!("https://content.warframe.com/PublicExport/Manifest/{}", manifest_endpoint);
-    let manifest_data = fetch_data_json(&manifest_url).await.unwrap();
-    println!("Manifest Data: {:?}", manifest_data);
+        if let Some(index) = export.as_str().find(".json") {
+            let filtered_name = &export.as_str()[..index + 5];
+            let manifest_file = File::create(format!("data/manifest/{}", filtered_name)).expect("TODO: panic message");
+            serde_json::to_writer(manifest_file, &data.0).expect("TODO: panic message")
+        }
+
+    }
 }
