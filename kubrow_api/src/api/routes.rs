@@ -7,4 +7,5 @@ pub fn routes() -> Router {
     Router::new()
         .route("/", get(handler))
         .route("/warframe/ws", get(world_state))
+        .route("/test/stinky", get (stinki))
 }

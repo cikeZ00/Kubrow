@@ -10,10 +10,10 @@ pub async fn handler() -> &'static str {
 }
 
 async fn fetch_worldstate() -> Result<Json<BTreeMap<String, Value>>, Error> {
-    let url = "https://content.warframe.com/dynamic/worldState.php";
+    let url = "https://content.warframe.com/dynamic/worldState.php"; //software gore for the map
     let response = reqwest::get(url).await?;
     let body = response.text().await?;
-    let obj: BTreeMap<String, Value> = serde_json::from_str(&body).unwrap();
+    let obj: BTreeMap<String, Value> = serde_json::from_str(&body).unwrap(); //.toString()
     Ok(Json(obj))
 }
 
@@ -28,4 +28,15 @@ pub async fn world_state() -> Json<BTreeMap<String, Value>> {
         },
     }
 }
+
+#[debug_handler]
+pub async fn stinki() -> Json<String> {
+    let a: u8 = 127;
+    let b: u8 = 127;
+    let c: u8 = a + b;
+    let result: Json<String> = Json(c.to_string()); // You need to replace this with the actual value you want to return
+    result
+}
+
+
 
