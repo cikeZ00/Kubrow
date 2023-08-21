@@ -90,9 +90,7 @@ pub async fn parse_manifest() {
     let mut decompressed_file: Vec<u8> = Vec::new();
     lzma_rs::lzma_decompress(&mut f, &mut decompressed_file).unwrap();
     let decompressed_str = String::from_utf8(decompressed_file).unwrap();
-
-    //let manifest_regex = r"ExportManifest.*";
-    //let parse_regex = r"Export.*";
+    
     let re = Regex::new(r"Export.*").unwrap();
     for export in re.find_iter(&decompressed_str) {
         let url = format!("https://content.warframe.com/PublicExport/Manifest/{}", export.as_str());
