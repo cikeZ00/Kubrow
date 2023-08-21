@@ -1,14 +1,14 @@
-use std::collections::BTreeMap;
-use std::fs::{DirBuilder, File, read_dir};
+use std::collections::{BTreeMap};
+use std::fs::{File, read_dir, create_dir_all, remove_file};
 use axum::Json;
 use reqwest::{Client, Error, Url};
 use serde_json::{to_vec, Value};
 use regex::Regex;
-use std::io::Write;
+use std::io::{Read, Write};
+use sha2::{Sha256, Digest};
 
 
 async fn fetch_data_json(url: &str) -> Result<Json<BTreeMap<String, Value>>, Error> {
-    println!("{}", url);
     let response = reqwest::get(url).await?;
     let data = response.text().await?;
 
@@ -17,17 +17,6 @@ async fn fetch_data_json(url: &str) -> Result<Json<BTreeMap<String, Value>>, Err
 
     let manifest: BTreeMap<String, Value> = serde_json::from_str(&cleaned_data).unwrap();
     Ok(Json(manifest))
-}
-
-async fn fetch_data(url: &str) -> Result<Vec<u8>, Error> {
-    let client = Client::builder()
-        .danger_accept_invalid_certs(true)
-        .build()?;
-
-    let response = client.get(url).send().await?;
-    let body = response.bytes().await?;
-
-    Ok(body.to_vec())
 }
 
 async fn fetch_file(url: &str) -> Result<(), Box<dyn std::error::Error>> {
@@ -40,17 +29,42 @@ async fn fetch_file(url: &str) -> Result<(), Box<dyn std::error::Error>> {
     }
 
     if !read_dir("data").is_ok() {
-        DirBuilder::new().recursive(true).create("data").expect("TODO: panic message");
-        DirBuilder::new().recursive(true).create("data/manifest").expect("TODO: panic message");
+        create_dir_all("data")?;
+        create_dir_all("data/manifest")?;
     }
-    let mut output_file = std::fs::File::create("data/wf.lzma")?;
+
     let content = response.bytes().await?;
-    output_file.write_all(&content)?;
+    let downloaded_hash = compute_hash(&content);
+
+    if let Ok(mut local_file) = File::open("data/wf.lzma") {
+        let mut local_content = Vec::new();
+        local_file.read_to_end(&mut local_content)?;
+        let local_hash = compute_hash(&local_content);
+
+        if downloaded_hash != local_hash {
+            let mut output_file = File::create("data/wf.lzma")?;
+            output_file.write_all(&content)?;
+            println!("File updated.");
+        } else {
+            println!("File already up to date.");
+        }
+    } else {
+        let mut output_file = File::create("data/wf.lzma")?;
+        output_file.write_all(&content)?;
+        println!("File downloaded.");
+    }
+
     Ok(())
 }
 
+fn compute_hash(data: &[u8]) -> String {
+    let mut hasher = Sha256::new();
+    hasher.update(data);
+    format!("{:x}", hasher.finalize())
+}
+
 async fn origin_server_available() -> bool {
-    match fetch_data("https://origin.warframe.com/PublicExport/index_en.txt.lzma").await {
+    match fetch_file("https://origin.warframe.com/PublicExport/index_en.txt.lzma").await {
         Ok(_) => true,
         Err(_) => false,
     }
@@ -73,9 +87,9 @@ pub async fn parse_manifest() {
     // Decompress the manifest we fetched
     let filename = "data/wf.lzma";
     let mut f = std::io::BufReader::new(File::open(filename).unwrap());
-    let mut decomp: Vec<u8> = Vec::new();
-    lzma_rs::lzma_decompress(&mut f, &mut decomp).unwrap();
-    let decompressed_str = String::from_utf8(decomp).unwrap();
+    let mut decompressed_file: Vec<u8> = Vec::new();
+    lzma_rs::lzma_decompress(&mut f, &mut decompressed_file).unwrap();
+    let decompressed_str = String::from_utf8(decompressed_file).unwrap();
 
     //let manifest_regex = r"ExportManifest.*";
     //let parse_regex = r"Export.*";
@@ -86,9 +100,44 @@ pub async fn parse_manifest() {
 
         if let Some(index) = export.as_str().find(".json") {
             let filtered_name = &export.as_str()[..index + 5];
-            let manifest_file = File::create(format!("data/manifest/{}", filtered_name)).expect("TODO: panic message");
-            serde_json::to_writer_pretty(manifest_file, &data.0).expect("TODO: panic message")
-        }
+            let local_path = format!("data/manifest/{}", filtered_name);
 
+            if let Ok(mut local_file) = File::open(&local_path) {
+                let mut local_content = String::new();
+                let mut downloaded_hash = String::new();
+                let mut local_hash = String::new();
+
+                local_file.read_to_string(&mut local_content).expect("Unable to read local manifest.");
+                let local_json: Result<Value, _> = serde_json::from_str(&*local_content);
+                match local_json {
+                    Ok(parsed_json) => {
+                        downloaded_hash = compute_hash(&to_vec(&data.0).unwrap());
+                        local_hash = compute_hash(&to_vec(&parsed_json).unwrap());
+                    }
+                    Err(_e) => {
+                        remove_file(format!("{}", &local_path)).expect("Unable to remove corrupted json");
+                        let manifest_file = File::create(format!("data/manifest/{}", filtered_name)).expect("TODO: panic message");
+                        serde_json::to_writer_pretty(manifest_file, &data.0).expect("TODO: panic message");
+                        println!("Re-Downloaded corrupted file.");
+
+                    }
+                }
+
+                if downloaded_hash != local_hash {
+                    remove_file(format!("{}", &local_path)).expect("Unable to remove corrupted json!");
+                    let manifest_file = File::create(format!("data/manifest/{}", filtered_name)).expect("Failed to create manifest json.");
+                    serde_json::to_writer_pretty(manifest_file, &data.0).expect("Failed to write data to manifest json.");
+                    println!("Updated: {}", filtered_name);
+                    println!("Down hash: {}", downloaded_hash.as_str());
+                    println!("Local hash: {}", local_hash.as_str())
+                } else {
+                    println!("Up to date: {}", filtered_name);
+                }
+            } else {
+                let manifest_file = File::create(format!("data/manifest/{}", filtered_name)).expect("TODO: panic message");
+                serde_json::to_writer_pretty(manifest_file, &data.0).expect("TODO: panic message");
+                println!("Cached: {}", filtered_name);
+            }
+        }
     }
 }
