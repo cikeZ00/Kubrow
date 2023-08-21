@@ -87,7 +87,7 @@ pub async fn parse_manifest() {
         if let Some(index) = export.as_str().find(".json") {
             let filtered_name = &export.as_str()[..index + 5];
             let manifest_file = File::create(format!("data/manifest/{}", filtered_name)).expect("TODO: panic message");
-            serde_json::to_writer(manifest_file, &data.0).expect("TODO: panic message")
+            serde_json::to_writer_pretty(manifest_file, &data.0).expect("TODO: panic message")
         }
 
     }
