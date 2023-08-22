@@ -2,5 +2,4 @@
 
 members = [
     "kubrow_api",
-    "kubrow_app",
 ]
