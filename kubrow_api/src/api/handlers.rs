@@ -30,13 +30,8 @@ pub async fn world_state() -> Json<BTreeMap<String, Value>> {
 }
 
 #[debug_handler]
-pub async fn stinki() -> Json<String> {
+pub async fn stinki() -> String {
     let a: u8 = 127;
     let b: u8 = 127;
-    let c: u8 = a + b;
-    let result: Json<String> = Json(c.to_string()); // You need to replace this with the actual value you want to return
-    result
+    format!("{}", a + b)
 }
-
-
-
