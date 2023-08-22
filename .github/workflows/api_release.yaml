@@ -1,38 +1,31 @@
-name: Cross Compile and Release
+name: Cross-compile
 
 on:
   release:
     types:
       - created
+#on: [push, pull_request]
 
 jobs:
-  cross-compile:
-    name: Cross Compile
+  build:
+    name: Build
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        target:
+          - armv7-unknown-linux-gnueabihf
+          - aarch64-unknown-linux-gnu
+          - x86_64-unknown-linux-gnu
+          - x86_64-pc-windows-gnu
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-
-      - name: Cross compile for Windows
-        run: cargo build --release --target x86_64-pc-windows-gnu
-        working-directory: kubrow_api
-
-      - name: Cross compile for Linux
-        run: cargo build --release --target x86_64-unknown-linux-gnu
-        working-directory: kubrow_api
-
-      - name: Create Release
-        id: create_release
-        uses: softprops/action-gh-release@v1
+          target: ${{ matrix.target }}
+          override: true
+      - uses: actions-rs/cargo@v1
         with:
-          files:
-            - kubrow_api/target/x86_64-pc-windows-gnu/release/your_binary_name.exe
-            - kubrow_api/target/x86_64-unknown-linux-gnu/release/your_binary_name
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          use-cross: true
+          command: build
+          args: --release --target=${{ matrix.target }}
