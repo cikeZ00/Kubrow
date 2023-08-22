@@ -9,6 +9,7 @@ use std::net::SocketAddr;
 use tower_http::cors::CorsLayer;
 
 mod api;
+mod tools;
 
 #[tokio::main]
 async fn main() {
@@ -26,7 +27,9 @@ async fn main() {
     let app = api::routes::routes()
         .layer(cors);
 
-    println!("Starting server on http://127.0.0.1:3000");
+    tools::parser::parse_manifest().await;
+
+    println!("Starting server on http://{}/", addr.to_string());
     // Use `hyper::server::Server` which is re-exported through `axum::Server` to serve the app.
     Server::bind(&addr)
         // Hyper server takes a make service.
