@@ -1,4 +1,4 @@
-name: Rust Cross-Compile
+name: Cross Compile and Release
 
 on:
   release:
@@ -6,41 +6,33 @@ on:
       - created
 
 jobs:
-  build:
+  cross-compile:
+    name: Cross Compile
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        
+
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-          
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y mingw-w64
-          
-      - name: Build for Linux
-        run: cargo build --release --target x86_64-unknown-linux-gnu
-        working-directory: kubrow_api
-          
-      - name: Build for Windows
+
+      - name: Cross compile for Windows
         run: cargo build --release --target x86_64-pc-windows-gnu
         working-directory: kubrow_api
-        
-      - name: Archive artifacts
-        run: |
-          mkdir artifacts
-          mv kubrow_api/target/x86_64-unknown-linux-gnu/release/ kubrow_api-linux-x86_64
-          mv kubrow_api/target/x86_64-pc-windows-gnu/release/ kubrow_api-windows-x86_64.exe
-          zip -r artifacts/kubrow_api-artifacts.zip kubrow_api-linux-x86_64 kubrow_api-windows-x86_64.exe
-        working-directory: ${{ github.workspace }}
-        
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+
+      - name: Cross compile for Linux
+        run: cargo build --release --target x86_64-unknown-linux-gnu
+        working-directory: kubrow_api
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
         with:
-          name: kubrow_api-artifacts
-          path: artifacts/kubrow_api-artifacts.zip
+          files:
+            - kubrow_api/target/x86_64-pc-windows-gnu/release/your_binary_name.exe
+            - kubrow_api/target/x86_64-unknown-linux-gnu/release/your_binary_name
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
