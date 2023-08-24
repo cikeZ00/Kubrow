@@ -18,7 +18,6 @@ fn write_data<K, V>(name: &str, data: BTreeMap<K, V>)
 // *Lord forgive me, for I have sinned*
 // TODO: Un-fuck whatever the fuck I wrote here
 pub async fn categorize_data(name: &str, data: Json<BTreeMap<String, Value>>) {
-    println!("{}", name);
     match name {
         _ if name.contains("ExportCustoms") => {
             // Handle ExportCustoms case
