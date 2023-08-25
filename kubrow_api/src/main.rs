@@ -7,6 +7,7 @@ use axum::http::{
 };
 use std::net::SocketAddr;
 use tower_http::cors::CorsLayer;
+use std::thread;
 
 mod api;
 mod tools;
@@ -27,7 +28,18 @@ async fn main() {
     let app = api::routes::routes()
         .layer(cors);
 
-    tools::parser::parse_manifest().await;
+    // Thread for running background tools
+    let thread_handle = thread::spawn(|| {
+        loop {
+            tokio::runtime::Runtime::new()
+                .unwrap()
+                .block_on(async {
+                    tools::parser::parse_manifest().await;
+                    // Adjust sleep duration as needed
+                    tokio::time::sleep(tokio::time::Duration::from_secs(86400)).await;
+                });
+        }
+    });
 
     println!("Starting server on http://{}/", addr.to_string());
     // Use `hyper::server::Server` which is re-exported through `axum::Server` to serve the app.
@@ -36,5 +48,7 @@ async fn main() {
         .serve(app.into_make_service())
         .await
         .unwrap();
+
+    thread_handle.join().expect("Thread panicked");
 }
 

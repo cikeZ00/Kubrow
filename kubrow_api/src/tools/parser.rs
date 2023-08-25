@@ -6,6 +6,7 @@ use serde_json::{to_vec, Value};
 use regex::Regex;
 use std::io::{Read, Write};
 use sha2::{Sha256, Digest};
+use crate::tools::sorter::{categorize_data};
 
 
 async fn fetch_data_json(url: &str) -> Result<Json<BTreeMap<String, Value>>, Error> {
@@ -31,6 +32,7 @@ async fn fetch_file(url: &str) -> Result<(), Box<dyn std::error::Error>> {
     if !read_dir("data").is_ok() {
         create_dir_all("data")?;
         create_dir_all("data/manifest")?;
+        create_dir_all("data/organised")?;
     }
 
     let content = response.bytes().await?;
@@ -90,7 +92,7 @@ pub async fn parse_manifest() {
     let mut decompressed_file: Vec<u8> = Vec::new();
     lzma_rs::lzma_decompress(&mut f, &mut decompressed_file).unwrap();
     let decompressed_str = String::from_utf8(decompressed_file).unwrap();
-    
+
     let re = Regex::new(r"Export.*").unwrap();
     for export in re.find_iter(&decompressed_str) {
         let url = format!("https://content.warframe.com/PublicExport/Manifest/{}", export.as_str());
@@ -127,7 +129,8 @@ pub async fn parse_manifest() {
                     serde_json::to_writer_pretty(manifest_file, &data.0).expect("Failed to write data to manifest json.");
                     println!("Updated: {}", filtered_name);
                     println!("Down hash: {}", downloaded_hash.as_str());
-                    println!("Local hash: {}", local_hash.as_str())
+                    println!("Local hash: {}", local_hash.as_str());
+                    categorize_data(&filtered_name, data).await;
                 } else {
                     println!("Up to date: {}", filtered_name);
                 }
@@ -135,7 +138,9 @@ pub async fn parse_manifest() {
                 let manifest_file = File::create(format!("data/manifest/{}", filtered_name)).expect("TODO: panic message");
                 serde_json::to_writer_pretty(manifest_file, &data.0).expect("TODO: panic message");
                 println!("Cached: {}", filtered_name);
+                categorize_data(&filtered_name, data).await;
             }
         }
     }
 }
+
