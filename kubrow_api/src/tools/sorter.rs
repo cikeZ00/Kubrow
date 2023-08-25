@@ -323,63 +323,124 @@ pub async fn categorize_data(name: &str, data: Json<BTreeMap<String, Value>>) {
         }
         _ if name.contains("ExportUpgrades") => {
             // Handle ExportUpgrades case
-            let mut transformed_data: BTreeMap<String, BTreeMap<String, Value>> = BTreeMap::new();
-            let mut second_data: BTreeMap<String, Value> = BTreeMap::new();
-
             for (unique_name, _item) in data.iter() {
-                if unique_name == "ExportUpgrades" {
-                    let data = data[unique_name].as_array();
-                    for item in data.unwrap() {
+                if unique_name == "ExportAvionics" {
+                    let mut transformed_data = BTreeMap::new();
+                    let data2 = data.0[unique_name].as_array();
+                    let mut second_data = BTreeMap::new();
+                    for item in data2.unwrap() {
                         let item_name: &str = item["uniqueName"].as_str().unwrap();
                         let mut cloned_item = item.clone();
                         cloned_item.as_object_mut().unwrap().remove("uniqueName");
                         second_data.insert(item_name.to_string(), cloned_item);
                         transformed_data.insert(unique_name.to_string(), second_data.clone());
                     }
+                    write_data(format!("{}.json", unique_name).as_str(), transformed_data);
+
+                } else if unique_name == "ExportFocusUpgrades" {
+                    let mut transformed_data = BTreeMap::new();
+                    let data2 = data.0[unique_name].as_array();
+                    let mut second_data = BTreeMap::new();
+                    for item in data2.unwrap() {
+                        let item_name: &str = item["uniqueName"].as_str().unwrap();
+                        let mut cloned_item = item.clone();
+                        cloned_item.as_object_mut().unwrap().remove("uniqueName");
+                        second_data.insert(item_name.to_string(), cloned_item);
+                        transformed_data.insert(unique_name.to_string(), second_data.clone());
+                    }
+                    write_data(format!("{}.json", unique_name).as_str(), transformed_data);
+
+                } else if unique_name == "ExportModSet" {
+                    let mut transformed_data = BTreeMap::new();
+                    let data2 = data.0[unique_name].as_array();
+                    let mut second_data = BTreeMap::new();
+                    for item in data2.unwrap() {
+                        let item_name: &str = item["uniqueName"].as_str().unwrap();
+                        let mut cloned_item = item.clone();
+                        cloned_item.as_object_mut().unwrap().remove("uniqueName");
+                        second_data.insert(item_name.to_string(), cloned_item);
+                        transformed_data.insert(unique_name.to_string(), second_data.clone());
+                    }
+                    write_data(format!("{}.json", unique_name).as_str(), transformed_data);
+
+                } else if unique_name == "ExportUpgrades" {
+                    let mut transformed_data = BTreeMap::new();
+                    let data2 = data.0[unique_name].as_array();
+                    let mut second_data = BTreeMap::new();
+                    for item in data2.unwrap() {
+                        let item_name: &str = item["uniqueName"].as_str().unwrap();
+                        let mut cloned_item = item.clone();
+                        cloned_item.as_object_mut().unwrap().remove("uniqueName");
+                        second_data.insert(item_name.to_string(), cloned_item);
+                        transformed_data.insert(unique_name.to_string(), second_data.clone());
+                    }
+                    write_data(format!("{}.json", unique_name).as_str(), transformed_data);
                 }
             }
-            write_data(name, transformed_data);
 
         }
         _ if name.contains("ExportWarframes") => {
             // Handle ExportWarframes case
-            let mut transformed_data: BTreeMap<String, BTreeMap<String, Value>> = BTreeMap::new();
-            let mut second_data: BTreeMap<String, Value> = BTreeMap::new();
-
             for (unique_name, _item) in data.iter() {
-                if unique_name == "ExportWarframes" {
-                    let data = data[unique_name].as_array();
-                    for item in data.unwrap() {
+                if unique_name == "ExportAbilities" {
+                    let mut transformed_data = BTreeMap::new();
+                    let data2 = data.0[unique_name].as_array();
+                    let mut second_data = BTreeMap::new();
+                    for item in data2.unwrap() {
+                        let item_name: &str = item["abilityUniqueName"].as_str().unwrap();
+                        let mut cloned_item = item.clone();
+                        cloned_item.as_object_mut().unwrap().remove("abilityUniqueName");
+                        second_data.insert(item_name.to_string(), cloned_item);
+                        transformed_data.insert(unique_name.to_string(), second_data.clone());
+                    }
+                    write_data(format!("{}.json", unique_name).as_str(), transformed_data);
+
+                } else if unique_name == "ExportWarframes" {
+                    let mut transformed_data = BTreeMap::new();
+                    let data2 = data.0[unique_name].as_array();
+                    let mut second_data = BTreeMap::new();
+                    for item in data2.unwrap() {
                         let item_name: &str = item["uniqueName"].as_str().unwrap();
                         let mut cloned_item = item.clone();
                         cloned_item.as_object_mut().unwrap().remove("uniqueName");
                         second_data.insert(item_name.to_string(), cloned_item);
                         transformed_data.insert(unique_name.to_string(), second_data.clone());
                     }
+                    write_data(format!("{}.json", unique_name).as_str(), transformed_data);
                 }
             }
-            write_data(name, transformed_data);
 
         }
         _ if name.contains("ExportWeapons") => {
             // Handle ExportWeapons case
-            let mut transformed_data: BTreeMap<String, BTreeMap<String, Value>> = BTreeMap::new();
-            let mut second_data: BTreeMap<String, Value> = BTreeMap::new();
 
             for (unique_name, _item) in data.iter() {
-                if unique_name == "ExportWeapons" {
-                    let data = data[unique_name].as_array();
-                    for item in data.unwrap() {
+                if unique_name == "ExportRailjackWeapons" {
+                    let mut transformed_data = BTreeMap::new();
+                    let data2 = data.0[unique_name].as_array();
+                    let mut second_data = BTreeMap::new();
+                    for item in data2.unwrap() {
                         let item_name: &str = item["uniqueName"].as_str().unwrap();
                         let mut cloned_item = item.clone();
                         cloned_item.as_object_mut().unwrap().remove("uniqueName");
                         second_data.insert(item_name.to_string(), cloned_item);
                         transformed_data.insert(unique_name.to_string(), second_data.clone());
                     }
+                    write_data(format!("{}.json", unique_name).as_str(), transformed_data);
+                } else if unique_name == "ExportWeapons" {
+                    let mut transformed_data = BTreeMap::new();
+                    let data2 = data.0[unique_name].as_array();
+                    let mut second_data = BTreeMap::new();
+                    for item in data2.unwrap() {
+                        let item_name: &str = item["uniqueName"].as_str().unwrap();
+                        let mut cloned_item = item.clone();
+                        cloned_item.as_object_mut().unwrap().remove("uniqueName");
+                        second_data.insert(item_name.to_string(), cloned_item);
+                        transformed_data.insert(unique_name.to_string(), second_data.clone());
+                    }
+                    write_data(format!("{}.json", unique_name).as_str(), transformed_data);
                 }
             }
-            write_data(name, transformed_data);
-
         }
         _ => {
             println!("Not a filterable json: {}", name)
