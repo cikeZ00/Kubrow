@@ -288,9 +288,7 @@ pub async fn categorize_data(name: &str, data: Json<BTreeMap<String, Value>>) {
 
                 } else if unique_name == "ExportRailjack" {
                     let mut transformed_data = BTreeMap::new();
-                    println!("{}", unique_name);
                     let data2 = data.0[unique_name].as_object().unwrap();
-                    println!("{}", data2.len());
                     let mut second_data: BTreeMap<String, BTreeMap<String, Value>> = BTreeMap::new();
                     let mut third_data = BTreeMap::new();
                     for _item in data2 {
@@ -441,6 +439,26 @@ pub async fn categorize_data(name: &str, data: Json<BTreeMap<String, Value>>) {
                     write_data(format!("{}.json", unique_name).as_str(), transformed_data);
                 }
             }
+        }
+        _ if name.contains("ExportManifest") => {
+            // Handle ExportSentinels case
+            let mut transformed_data: BTreeMap<String, BTreeMap<String, Value>> = BTreeMap::new();
+            let mut second_data: BTreeMap<String, Value> = BTreeMap::new();
+
+            for (unique_name, _item) in data.iter() {
+                if unique_name == "Manifest" {
+                    let data = data[unique_name].as_array();
+                    for item in data.unwrap() {
+                        let item_name: &str = item["uniqueName"].as_str().unwrap();
+                        let mut cloned_item = item.clone();
+                        cloned_item.as_object_mut().unwrap().remove("uniqueName");
+                        second_data.insert(item_name.to_string(), cloned_item);
+                        transformed_data.insert(unique_name.to_string(), second_data.clone());
+                    }
+                }
+            }
+            write_data(name, transformed_data);
+
         }
         _ => {
             println!("Not a filterable json: {}", name)
