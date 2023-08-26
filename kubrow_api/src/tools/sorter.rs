@@ -1,5 +1,5 @@
 use serde_json::{Value};
-use std::fs::{File};
+use std::fs::{File, remove_file};
 use std::collections::{BTreeMap};
 use axum::Json;
 use serde::Serialize;
@@ -10,6 +10,10 @@ fn write_data<K, V>(name: &str, data: BTreeMap<K, V>)
         V: Serialize,
 {
     let local_path = format!("data/organised/{}", name);
+
+    if let Ok(_local_file) = File::open(&local_path) {
+        remove_file(format!("{}", &local_path)).expect(&*format!("Unable to remove outdated {} json!", name));
+    }
     let local_file = File::create(&local_path).expect("Failed to write data.");
     serde_json::to_writer_pretty(local_file, &data).expect("Failed to write data to JSON.");
 }
