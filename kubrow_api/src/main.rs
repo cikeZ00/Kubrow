@@ -19,7 +19,7 @@ async fn main() {
 
     // CORS
     let cors = CorsLayer::new()
-        .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
+        .allow_origin(format!("http://{}", addr.to_string()).parse::<HeaderValue>().unwrap())
         .allow_methods([Method::GET, Method::POST, Method::PATCH, Method::DELETE])
         .allow_credentials(true)
         .allow_headers([AUTHORIZATION, ACCEPT, CONTENT_TYPE]);
@@ -34,7 +34,8 @@ async fn main() {
             tokio::runtime::Runtime::new()
                 .unwrap()
                 .block_on(async {
-                    tools::parser::parse_manifest().await;
+                    //tools::parser::parse_manifest().await;
+                    tools::assets::fetch_assets().await;
                     // Adjust sleep duration as needed
                     tokio::time::sleep(tokio::time::Duration::from_secs(86400)).await;
                 });
