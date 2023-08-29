@@ -1,3 +1,6 @@
+# Discord
+https://discord.gg/YnMgKSKkDU
+
 # Kubrow - An Open Source Warframe Companion App
 Kubrow is a feature-rich open-source companion app designed specifically for Warframe players. With Kubrow, you'll have access to a wide range of functionalities that enhance your gaming experience and help you navigate the vast universe of Warframe with ease.
 
