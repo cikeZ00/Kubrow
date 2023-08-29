@@ -1,5 +1,7 @@
 // main.rs
 
+extern crate core;
+
 use axum::{Server};
 use axum::http::{
     header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
@@ -34,7 +36,7 @@ async fn main() {
             tokio::runtime::Runtime::new()
                 .unwrap()
                 .block_on(async {
-                    //tools::parser::parse_manifest().await;
+                    tools::parser::parse_manifest().await;
                     tools::assets::fetch_assets().await;
                     // Adjust sleep duration as needed
                     tokio::time::sleep(tokio::time::Duration::from_secs(86400)).await;
