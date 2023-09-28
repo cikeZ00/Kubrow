@@ -3,22 +3,13 @@
 </script>
 
 <main class="container">
-  <h1>Welcome to Tauri!</h1>
-
-  <div class="row">
-    <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-      <img src="/vite.svg" class="logo vite" alt="Vite Logo" />
-    </a>
-    <a href="https://tauri.app" target="_blank" rel="noreferrer">
-      <img src="/tauri.svg" class="logo tauri" alt="Tauri Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank" rel="noreferrer">
-      <img src="/svelte.svg" class="logo svelte" alt="Svelte Logo" />
-    </a>
-  </div>
+  <h1>Kubrow</h1>
+  <a href="https://github.com/cikeZ00/Kubrow" target="_blank" rel="noreferrer">
+    <img src="/Kubrow.svg" class="logo vite" alt="Kubrow Logo" />
+  </a>
 
   <p>
-    Click on the Tauri, Vite, and Svelte logos to learn more.
+    A warframe companion for both new and veteran players alike.
   </p>
 
   <div class="row">

@@ -21,7 +21,7 @@ pub(crate) async fn fetch_assets(){
                             let client = Client::new();
                             let url = format!("https://content.warframe.com/PublicExport/{}", texture_url);
                             let response = client.get(url).send().await;
-                            let body = response.unwrap().bytes().await.unwrap();
+                            let body = response.unwrap().bytes().await.expect("Failed!");
 
                             if let Some(parent_dir) = Path::new(&target_path).parent() {
                                 if let Err(err) = create_dir_all(parent_dir) {
