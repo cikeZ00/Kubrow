@@ -4,13 +4,16 @@
 
 <main class="container">
   <h1>Kubrow</h1>
+  <header>
+
   <a href="https://github.com/cikeZ00/Kubrow" target="_blank" rel="noreferrer">
     <img src="/Kubrow.svg" class="logo vite" alt="Kubrow Logo" />
   </a>
-
   <p>
     A warframe companion for both new and veteran players alike.
   </p>
+  
+</header>
 
   <div class="row">
     <Greet />
