@@ -7,7 +7,7 @@
   <header>
 
   <a href="https://github.com/cikeZ00/Kubrow" target="_blank" rel="noreferrer">
-    <img src="/Kubrow.svg" class="logo vite" alt="Kubrow Logo" />
+    <img src="/Kubrow.svg" class="logo kubrow" alt="Kubrow Logo" />
   </a>
   <p>
     A warframe companion for both new and veteran players alike.
@@ -23,11 +23,7 @@
 </main>
 
 <style>
-  .logo.vite:hover {
+  .logo.kubrow:hover {
     filter: drop-shadow(0 0 2em #747bff);
-  }
-
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00);
   }
 </style>

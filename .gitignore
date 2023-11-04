@@ -1,55 +1,24 @@
-# Miscellaneous
-*.class
+# Logs
+logs
 *.log
-*.pyc
-*.swp
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
 .DS_Store
-.atom/
-.buildlog/
-.history
-.svn/
-
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-**/.idea/
-
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-**/.vscode/
-
-# Web related
-
-# Symbolication related
-app.*.symbols
-
-# Obfuscation related
-app.*.map.json
-
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
-native/target
-xcuserdata
-jniLibs
-
-**/Cargo.lock
-**/pubspec.lock
-
-# Ignore Rust target compilation files
-**/target/
-
-# Ignore pnpm specific files
-**/pnpm-lock.yaml
-**/.pnpm-debug.log
-
-# Ignore Node.js dependencies (optional)
-# Uncomment the following line if you want to ignore the "node_modules" folder.
-**/node_modules/**
-
-# Warframe
-**/wf.lzma
-/kubrow_api/data/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

@@ -25,7 +25,7 @@
 <div>
   <ul class="menu">
     <li><a href="#" on:click={greet}>Greet</a></li>
-    <li><a href="#" on:click={option1}>Map</a></li>
+    <li><a href="/map">Map</a></li>
     <li><a href="#" on:click={option2}>Wiki</a></li>
     <!-- Add more menu items here with their respective functions -->
   </ul>
