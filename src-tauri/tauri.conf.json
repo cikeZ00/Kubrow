@@ -7,21 +7,14 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "kubrow_app",
+    "productName": "kubrow",
     "version": "0.0.0"
   },
   "tauri": {
-    "allowlist": {
-      "all": false,
-      "shell": {
-        "all": false,
-        "open": true
-      }
-    },
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "com.kubrow.dev",
+      "identifier": "com.tauri.dev",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
@@ -37,10 +30,15 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "kubrow_app",
+        "title": "kubrow",
         "width": 800,
-        "height": 500
+        "height": 600
       }
     ]
+  },
+  "plugins": {
+    "shell": {
+      "open": true
+    }
   }
 }
