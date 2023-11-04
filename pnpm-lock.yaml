@@ -14,7 +14,7 @@ devDependencies:
     specifier: ^2.0.0
     version: 2.4.6(svelte@3.59.2)(vite@4.4.9)
   '@tauri-apps/cli':
-    specifier: ^1.4.0
+    specifier: ^1.5.0
     version: 1.5.0
   '@tsconfig/svelte':
     specifier: ^3.0.0
